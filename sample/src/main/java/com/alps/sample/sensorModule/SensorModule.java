@@ -3,9 +3,7 @@ package com.alps.sample.sensorModule;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.alps.sample.constants.Constants;
 import com.alps.sample.log.Logg;
 import com.alps.sample.sensorModule.command.Commander;
 import com.alps.sample.sensorModule.command.control.*;
@@ -18,30 +16,14 @@ import com.alps.sample.sensorModule.enums.AccelerationSensorRange;
 import com.alps.sample.sensorModule.enums.MeasuringMode;
 import com.alps.sample.sensorModule.enums.MeasuringState;
 import com.alps.sample.sensorModule.enums.Sensor;
-import com.example.google.nodejsmanager.nodejsmanager.ConnectionManager;
-import com.example.google.nodejsmanager.nodejsmanager.SocketManager;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
-import io.socket.client.IO;
-import io.socket.emitter.Emitter;
-import io.socket.engineio.client.transports.WebSocket;
-
-import static java.util.concurrent.Executors.newScheduledThreadPool;
 
 
 /**
@@ -54,7 +36,7 @@ import static java.util.concurrent.Executors.newScheduledThreadPool;
  * 接続中は受信バイト列を解析して{@link SensorModule#latestData}を更新するとともに、
  * {@link com.alps.sample.sensorModule.SensorModule.ISensorModule}を利用してイベント通知を行います。
  */
-public class SensorModule implements ConnectionManager.EventCallbackListener {
+public class SensorModule {
     private static final String TAG = "SensorModule";
 
     /**
@@ -159,6 +141,20 @@ public class SensorModule implements ConnectionManager.EventCallbackListener {
     public AccelerationSensorRange accelerationSensorRange = AccelerationSensorRange.G2;
     public int intervalTimerAwakeLimit = 0;
 
+    private static onReadBLESensorListener onReadBLESensorListener;
+
+    public interface onReadBLESensorListener {
+        public void onReadDataBLESensor(JsonObject eventLog);
+    }
+
+    public static void subscribeToListener(onReadBLESensorListener listener) {
+        onReadBLESensorListener = listener;
+    }
+
+    public static void unSubscribeToListener() {
+        onReadBLESensorListener = null;
+    }
+
 
     /*
      * Sensor Module Sensor Data
@@ -203,16 +199,13 @@ public class SensorModule implements ConnectionManager.EventCallbackListener {
 
         bleConnect = new BLEConnect(context, bluetoothDevice, iBLEConnect);
         logger = new DataLogger(context, name);
-        connectSocketViot();
+
     }
 
 
     private int tag;
     private ISensorModule iSensorModule;
     private Context context;
-    private SocketManager socketManager;
-    private int connectionIntents = 0;
-    private ScheduledExecutorService schedulePingViot;
 
     private BLEConnect bleConnect;
     private Commander commander;
@@ -587,7 +580,10 @@ public class SensorModule implements ConnectionManager.EventCallbackListener {
                             e.printStackTrace();
                         }
 
-                        onReadSensor(message);
+
+                        if (onReadBLESensorListener != null)
+                            onReadBLESensorListener.onReadDataBLESensor(message);
+
 
                         if (shouldNotify) {
                             if (iSensorModule != null) {
@@ -759,128 +755,7 @@ public class SensorModule implements ConnectionManager.EventCallbackListener {
         }
     }
 
-    private void connectSocketViot() {
-        if (connectionIntents > 3) {
-            showErrorMessage();
-            return;
-        }
-        connectionIntents++;
-        socketManager = new SocketManager(context);
-        IO.Options opts = new IO.Options();
-        opts.transports = new String[]{WebSocket.NAME};
-        //opts.forceNew = true;
-        socketManager.createSocket(Constants.VIOT_BASE_URL, opts);
 
-
-        socketManager.getSocket().on("authenticated", onAuthenticated);
-        socketManager.getSocket().on("lb-pong", onAndroidPongVIOT);
-
-
-        if (socketManager.getSocket().connected()) {
-            socketManager.getSocket().disconnect();
-        }
-        socketManager.getSocket().connect();
-    }
-
-    private Emitter.Listener onAuthenticated = new Emitter.Listener() {
-        @Override
-        public void call(Object... args) {
-            Log.d(TAG, "VIoT - onAuthenticated");
-            socketManager.getSocket().emit("lb-ping");
-            if (schedulePingViot == null) {
-                schedulePingViot = newScheduledThreadPool(5);
-            }
-            schedulePingViot.scheduleAtFixedRate(new Runnable() {
-                public void run() {
-                    try {
-                        if (socketManager.getSocket() != null
-                                && socketManager.getSocket().connected()) {
-                            socketManager.getSocket().emit("lb-ping");
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }, 0, 15, TimeUnit.SECONDS);
-        }
-    };
-
-    private Emitter.Listener onAndroidPongVIOT = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            if (socketManager.getSocket() != null) {
-                Log.d(TAG, "VIoT - pong received ...");
-            }
-        }
-    };
-
-    private void showErrorMessage() {
-        new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(context, "Socket disconnected", Toast.LENGTH_SHORT).show();
-            }
-        };
-    }
-
-    static JSONObject getCredentials() {
-        try {
-            String secondPart = "/api/connections/generateToken?api_key=%s&api_secret=%s";
-            String[] APIs = new String[]{Constants.API_KEY, Constants.API_SECRET};
-            String generateTokenApi = Constants.VIOT_BASE_URL + secondPart;
-            URL url = new URL(String.format(generateTokenApi, APIs[0],
-                    APIs[1]));
-            HttpURLConnection connection =
-                    (HttpURLConnection) url.openConnection();
-            BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(connection.getInputStream()));
-            StringBuilder json = new StringBuilder(1024);
-            String tmp;
-            while ((tmp = reader.readLine()) != null)
-                json.append(tmp).append("\n");
-            reader.close();
-            return new JSONObject(json.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    @Override
-    public void onEventCallbackReceived(String event, String socketIdentifier) {
-        switch (event) {
-            case ConnectionManager.EVENT_CONNECT: {
-                Log.d(TAG, "VIoT - onConnectEvent");
-                if (socketManager.getSocket() != null) {
-                    JSONObject json = getCredentials();
-                    try {
-                        if (json != null) {
-                            JSONObject requestJSONObject = new JSONObject();
-                            requestJSONObject.put("id", json.getString("id"));
-                            requestJSONObject.put("connectionId", json.getString("connectionId"));
-                            requestJSONObject.put("agent", "hub");
-                            requestJSONObject.put("uuid", "AndroidKyoceraApp");
-                            socketManager.getSocket().emit("webee-auth-strategy", requestJSONObject);
-                            Log.i(TAG, "json: " + requestJSONObject);
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                break;
-            }
-            case ConnectionManager.EVENT_DISCONNECT: {
-                Log.d(TAG, "VIoT - onDisconnectEvent");
-                connectSocketViot();
-                break;
-            }
-        }
-    }
-
-    public void onReadSensor(JsonObject message) {
-        Log.v(TAG, "message" + message);
-        socketManager.getSocket().emit("webee-hub-logger", message);
-    }
 
 
 }

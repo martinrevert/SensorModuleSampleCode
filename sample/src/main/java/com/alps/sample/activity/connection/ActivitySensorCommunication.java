@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -17,6 +18,7 @@ import android.widget.*;
 import com.alps.sample.R;
 import com.alps.sample.activity.base.usingBluetooth.ActivityUsingBluetooth;
 import com.alps.sample.activity.base.view.LinearLayoutDetectableSoftKey;
+import com.alps.sample.constants.Constants;
 import com.alps.sample.log.Logg;
 import com.alps.sample.sensorModule.command.Commander;
 import com.alps.sample.sensorModule.SensorModule;
@@ -25,10 +27,27 @@ import com.alps.sample.sensorModule.enums.MeasuringMode;
 import com.alps.sample.sensorModule.enums.MeasuringState;
 import com.alps.sample.sensorModule.enums.Sensor;
 import com.alps.sample.sensorModule.enums.AwakeMode;
+import com.example.google.nodejsmanager.nodejsmanager.ConnectionManager;
+import com.example.google.nodejsmanager.nodejsmanager.SocketManager;
+import com.google.gson.JsonObject;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.*;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import io.socket.client.IO;
+import io.socket.emitter.Emitter;
+import io.socket.engineio.client.transports.WebSocket;
 
 import static com.alps.sample.R.id.setting_item_switch_ambient_light;
+import static java.util.concurrent.Executors.newScheduledThreadPool;
 
 /**
  * [JP] 渡された{@code BluetoothDevice}オブジェクトで{@link SensorModule}オブジェクトを生成し、
@@ -42,7 +61,7 @@ import static com.alps.sample.R.id.setting_item_switch_ambient_light;
  * @see com.alps.sample.sensorModule.LatestData
  */
 @SuppressLint("NewApi")
-public class ActivitySensorCommunication extends ActivityUsingBluetooth {
+public class ActivitySensorCommunication extends ActivityUsingBluetooth implements ConnectionManager.EventCallbackListener, SensorModule.onReadBLESensorListener {
     public static final int INDEX_MEASURING_MODE_SLOW = 0;
     public static final int INDEX_MEASURING_MODE_FAST = 1;
     public static final int INDEX_MEASURING_MODE_HYBRID = 2;
@@ -70,6 +89,43 @@ public class ActivitySensorCommunication extends ActivityUsingBluetooth {
     private ScrollView wrapperTextInfoData;
     private TextView textInfoData;
     private ImageView iconBattery;
+
+    private SocketManager socketManager;
+    private int connectionIntents = 0;
+    private ScheduledExecutorService schedulePingViot;
+
+    private Emitter.Listener onAuthenticated = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            Log.d(TAG, "VIoT - onAuthenticated");
+            socketManager.getSocket().emit("lb-ping");
+            if (schedulePingViot == null) {
+                schedulePingViot = newScheduledThreadPool(5);
+            }
+            schedulePingViot.scheduleAtFixedRate(new Runnable() {
+                public void run() {
+                    try {
+                        if (socketManager.getSocket() != null
+                                && socketManager.getSocket().connected()) {
+                            socketManager.getSocket().emit("lb-ping");
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }, 0, 15, TimeUnit.SECONDS);
+        }
+    };
+
+    private Emitter.Listener onAndroidPongVIOT = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            if (socketManager.getSocket() != null) {
+                Log.d(TAG, "VIoT - pong received ...");
+            }
+        }
+    };
+
 
 
     @Override
@@ -102,7 +158,7 @@ public class ActivitySensorCommunication extends ActivityUsingBluetooth {
 
         // set the tool-bar to this activity
         Toolbar mToolbar = (Toolbar) findViewById(R.id.header);
-        mToolbar.setTitle(R.string.app_title);
+        mToolbar.setTitle("Communication Activity");
         setSupportActionBar(mToolbar);
 
         linearLayoutDetectableSoftKey = (LinearLayoutDetectableSoftKey) findViewById(R.id.detectable_layout);
@@ -182,6 +238,7 @@ public class ActivitySensorCommunication extends ActivityUsingBluetooth {
         for (SensorModule sensorModule : sensorModules) {
             sensorModule.activate();
         }
+        connectSocketViot();
     }
 
     @Override
@@ -198,12 +255,16 @@ public class ActivitySensorCommunication extends ActivityUsingBluetooth {
     protected void onResume() {
         Logg.d(TAG, "onResume");
         super.onResume();
+        SensorModule.subscribeToListener(this);
+        ConnectionManager.subscribeToListener(this);
     }
 
     @Override
     protected void onPause() {
         Logg.d(TAG, "onPause");
         super.onPause();
+        SensorModule.unSubscribeToListener();
+        ConnectionManager.unSubscribeToListener();
     }
 
     @Override
@@ -212,6 +273,8 @@ public class ActivitySensorCommunication extends ActivityUsingBluetooth {
         super.onStop();
         // clear screen on flag
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        if (socketManager.getSocket() != null)
+            socketManager.getSocket().disconnect();
     }
 
     @Override
@@ -708,7 +771,7 @@ public class ActivitySensorCommunication extends ActivityUsingBluetooth {
     }
 
     private void updateSensorData(final SensorModule sensorModule) {
-//        Logg.d(TAG, "updateSensorData");
+    Logg.d(TAG, "updateSensorData");
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -812,4 +875,104 @@ public class ActivitySensorCommunication extends ActivityUsingBluetooth {
             }
         }
     };
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    private void connectSocketViot() {
+        if (connectionIntents > 3) {
+            showErrorMessage();
+            return;
+        }
+        connectionIntents++;
+        socketManager = new SocketManager(this);
+        IO.Options opts = new IO.Options();
+        opts.transports = new String[]{WebSocket.NAME};
+        //opts.forceNew = true;
+        socketManager.createSocket(Constants.VIOT_BASE_URL, opts);
+
+
+        socketManager.getSocket().on("authenticated", onAuthenticated);
+        socketManager.getSocket().on("lb-pong", onAndroidPongVIOT);
+
+
+        if (socketManager.getSocket().connected()) {
+            socketManager.getSocket().disconnect();
+        }
+        socketManager.getSocket().connect();
+    }
+
+    private void showErrorMessage() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(ActivitySensorCommunication.this, "Socket disconnected", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    static JSONObject getCredentials() {
+        try {
+            String secondPart = "/api/connections/generateToken?api_key=%s&api_secret=%s";
+            String[] APIs = new String[]{Constants.API_KEY, Constants.API_SECRET};
+            String generateTokenApi = Constants.VIOT_BASE_URL + secondPart;
+            URL url = new URL(String.format(generateTokenApi, APIs[0],
+                    APIs[1]));
+            HttpURLConnection connection =
+                    (HttpURLConnection) url.openConnection();
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(connection.getInputStream()));
+            StringBuilder json = new StringBuilder(1024);
+            String tmp;
+            while ((tmp = reader.readLine()) != null)
+                json.append(tmp).append("\n");
+            reader.close();
+            return new JSONObject(json.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public void onEventCallbackReceived(String event, String socketIdentifier) {
+        switch (event) {
+            case ConnectionManager.EVENT_CONNECT: {
+                Log.d(TAG, "VIoT - onConnectEvent");
+                if (socketManager.getSocket() != null) {
+                    JSONObject json = getCredentials();
+                    try {
+                        if (json != null) {
+                            JSONObject requestJSONObject = new JSONObject();
+                            requestJSONObject.put("id", json.getString("id"));
+                            requestJSONObject.put("connectionId", json.getString("connectionId"));
+                            requestJSONObject.put("agent", "hub");
+                            requestJSONObject.put("uuid", "AndroidALPSSensorPOC");
+                            socketManager.getSocket().emit("webee-auth-strategy", requestJSONObject);
+                            Log.i(TAG, "json: " + requestJSONObject);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
+            }
+            case ConnectionManager.EVENT_DISCONNECT: {
+                Log.d(TAG, "VIoT - onDisconnectEvent");
+                connectSocketViot();
+                break;
+            }
+        }
+    }
+
+
+
+    @Override
+    public void onReadDataBLESensor(JsonObject message) {
+        Log.v(TAG, "message" + message);
+        socketManager.getSocket().emit("webee-hub-logger", message);
+    }
+
+
+
 }
