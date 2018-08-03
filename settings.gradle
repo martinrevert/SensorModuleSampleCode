@@ -1,1 +1,2 @@
-include ':sample'
+include ':sample',':nodejsmanager'
+project(':nodejsmanager').projectDir = new File('../nodejsmanager')
