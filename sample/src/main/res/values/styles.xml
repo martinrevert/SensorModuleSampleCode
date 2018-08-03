@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="AppBaseTheme" parent="Theme.AppCompat.Light.NoActionBar">
+
+    </style>
+
+    <style name="AppTheme" parent="AppBaseTheme">
+        <item name="colorPrimary">@color/apptheme_color_primary</item>
+        <item name="colorPrimaryDark">@color/apptheme_color_primary_dark</item>
+        <item name="colorAccent">@color/apptheme_color_primary</item>
+        <item name="colorControlNormal">@color/apptheme_color_primary</item>
+        <item name="colorControlHighlight">@color/apptheme_color_primary</item>
+        <item name="colorControlActivated">@color/apptheme_color_primary</item>
+        <item name="android:alertDialogTheme">@style/AlertDialogTheme</item>
+    </style>
+
+    <style name="AlertDialogTheme" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@color/apptheme_color_primary</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
+
+    <style name="SettingItemHeader">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/apptheme_color_primary</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:layout_marginLeft">16dp</item>
+        <item name="android:layout_marginBottom">16dp</item>
+    </style>
+
+    <style name="SettingItemContentsTable">
+        <item name="android:stretchColumns">0</item>
+        <item name="android:layout_marginLeft">18dp</item>
+        <item name="android:layout_marginBottom">18dp</item>
+        <item name="android:layout_marginRight">18dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="SettingItemRow">
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:background">@drawable/drawable_setting_item_row</item>
+        <item name="android:paddingTop">18dp</item>
+        <item name="android:paddingBottom">18dp</item>
+    </style>
+
+    <style name="SettingItemRowSubTitle">
+        <item name="android:textColor">@color/apptheme_color_secondary_text</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">18dp</item>
+    </style>
+
+    <style name="SettingItemRowItem">
+        <item name="android:layout_marginRight">18dp</item>
+    </style>
+
+    <style name="SettingItemSwitchPortrait">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">16dp</item>
+    </style>
+
+    <style name="BatteryValueText">
+        <item name="android:textSize">14sp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+</resources>

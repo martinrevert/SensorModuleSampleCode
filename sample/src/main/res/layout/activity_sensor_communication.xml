@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.alps.sample.activity.base.view.LinearLayoutDetectableSoftKey
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+
+        android:id="@+id/detectable_layout"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        tools:context="com.alps.sample.activity.base.view.LinearLayoutDetectableSoftKey">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+        <Spinner
+                android:id="@+id/spinner_device"
+                android:spinnerMode="dropdown"
+                android:dropDownWidth="wrap_content"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"/>
+        <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+            <ImageView
+                    android:id="@+id/icon_status_battery"
+                    android:layout_margin="2dp"
+                    android:layout_width="36dp" android:layout_height="36dp"/>
+            <LinearLayout
+                    android:gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                <TextView
+                        android:id="@+id/battery_value"
+                        style="@style/BatteryValueText"
+                        android:text="@string/unknown_battery_value"/>
+                <TextView
+                        style="@style/BatteryValueText"
+                        android:text="[V]"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/main_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="visible" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" >
+                    <Button
+                            android:id="@+id/button_setting_read"
+                            style="?android:attr/buttonStyleSmall"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/button_read_setting" />
+                    <Button
+                            android:id="@+id/button_setting_write"
+                            style="?android:attr/buttonStyleSmall"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/button_write_setting" />
+                    <Button
+                            android:id="@+id/button_sync_timestamp"
+                            style="?android:attr/buttonStyleSmall"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/button_sync_timestamp" />
+                    <Button
+                            android:id="@+id/button_sleep"
+                            style="?android:attr/buttonStyleSmall"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/button_sleep" />
+                    <Button
+                            android:id="@+id/button_measure"
+                            style="?android:attr/buttonStyleSmall"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/button_measure_on" />
+                </LinearLayout>
+
+                <ScrollView
+                    android:id="@+id/text_info_setting"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:layout_margin="2dp"
+                    android:fadeScrollbars="false"
+                    android:background="@android:color/white"
+                    android:padding="4dp"
+                    android:textAppearance="?android:attr/textAppearanceMedium">
+
+                    <LinearLayout
+                            android:orientation="vertical"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                        <TextView
+                                android:text="@string/setting_item_header_measuring_mode"
+                                style="@style/SettingItemHeader"/>
+                        <LinearLayout
+                                android:orientation="vertical"
+                                style="@style/SettingItemContentsTable"
+                                android:layout_width="match_parent" android:layout_height="wrap_content">
+                            <Spinner
+                                    android:id="@+id/setting_item_edit_measuring_mode"
+                                    android:layout_marginBottom="8dp"
+                                    android:gravity="center"
+                                    android:spinnerMode="dropdown"
+                                    android:dropDownWidth="match_parent"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"/>
+                        </LinearLayout>
+
+                        <TextView
+                                android:text="@string/setting_item_header_measuring_intervals"
+                                style="@style/SettingItemHeader"/>
+                        <LinearLayout
+                                android:orientation="vertical"
+                                style="@style/SettingItemContentsTable"
+                                android:layout_width="match_parent" android:layout_height="wrap_content">
+                            <TextView
+                                    android:text="@string/measuring_interval_on_mode_slow"
+                                    android:textColor="@color/apptheme_color_secondary_text"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"/>
+                            <EditText
+                                    android:id="@+id/setting_item_edit_interval_on_mode_slow"
+                                    android:layout_marginBottom="8dp"
+                                    android:gravity="center"
+                                    android:inputType="number"
+                                    android:hint="@string/setting_item_hint_interval_on_mode_slow"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"/>
+                            <TextView
+                                    android:text="@string/measuring_interval_on_mode_fast"
+                                    android:textColor="@color/apptheme_color_secondary_text"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"/>
+                            <EditText
+                                    android:id="@+id/setting_item_edit_interval_on_mode_fast"
+                                    android:layout_marginBottom="8dp"
+                                    android:gravity="center"
+                                    android:inputType="number"
+                                    android:hint="@string/setting_item_hint_interval_on_mode_fast"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"/>
+                        </LinearLayout>
+
+                        <TextView
+                                android:text="@string/setting_item_header_sampling_sensors"
+                                style="@style/SettingItemHeader"/>
+                        <LinearLayout
+                            android:orientation="vertical"
+                            style="@style/SettingItemContentsTable"
+                            android:layout_width="match_parent" android:layout_height="wrap_content">
+                            <TextView
+                                    android:text="@string/sampling_type_magnetic"
+                                    android:textColor="@color/apptheme_color_secondary_text"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"/>
+                            <Switch style="@style/SettingItemSwitchPortrait" android:id="@+id/setting_item_switch_magnetic"/>
+
+                            <TextView
+                                    android:text="@string/sampling_type_acceleration"
+                                    android:textColor="@color/apptheme_color_secondary_text"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"/>
+                            <Switch style="@style/SettingItemSwitchPortrait" android:id="@+id/setting_item_switch_acceleration"/>
+                            <TextView
+                                    android:text="@string/sampling_type_uv"
+                                    android:textColor="@color/apptheme_color_secondary_text"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"/>
+                            <Switch style="@style/SettingItemSwitchPortrait" android:id="@+id/setting_item_switch_uv"/>
+                            <TextView
+                                    android:text="@string/sampling_type_ambient_light"
+                                    android:textColor="@color/apptheme_color_secondary_text"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"/>
+                            <Switch style="@style/SettingItemSwitchPortrait" android:id="@+id/setting_item_switch_ambient_light"/>
+                            <TextView
+                                    android:text="@string/sampling_type_humidity"
+                                    android:textColor="@color/apptheme_color_secondary_text"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"/>
+                            <Switch style="@style/SettingItemSwitchPortrait" android:id="@+id/setting_item_switch_humidity"/>
+                            <TextView
+                                    android:text="@string/sampling_type_temperature"
+                                    android:textColor="@color/apptheme_color_secondary_text"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"/>
+                            <Switch style="@style/SettingItemSwitchPortrait" android:id="@+id/setting_item_switch_temperature"/>
+                            <TextView
+                                    android:text="@string/sampling_type_pressure"
+                                    android:textColor="@color/apptheme_color_secondary_text"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"/>
+                            <Switch style="@style/SettingItemSwitchPortrait" android:id="@+id/setting_item_switch_pressure"/>
+                        </LinearLayout>
+
+
+                        <TextView
+                                android:text="@string/setting_item_header_interval_sleep_on_timer_sleep"
+                                style="@style/SettingItemHeader"/>
+                        <LinearLayout
+                                android:orientation="vertical"
+                                style="@style/SettingItemContentsTable"
+                                android:layout_width="match_parent" android:layout_height="wrap_content">
+                            <EditText
+                                    style="@style/SettingItemRowItem"
+                                    android:id="@+id/setting_item_sleep_interval_on_timer_mode"
+                                    android:gravity="center"
+                                    android:inputType="number"
+                                    android:hint="@string/setting_item_hint_interval_on_mode_slow"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"/>
+                        </LinearLayout>
+
+                    </LinearLayout>
+                </ScrollView>
+            </LinearLayout>
+
+            <ScrollView
+                    android:id="@+id/wrapper_text_info_data"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:background="@android:color/white"
+                    android:layout_margin="4dp">
+                <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id="@+id/text_info_data"
+                        android:padding="8dp"
+                        android:text="@string/msg_default_text"
+                        android:gravity="center"
+                        android:textAppearance="?android:attr/textAppearanceSmall" />
+            </ScrollView>
+        </LinearLayout>
+
+        <LinearLayout
+                android:id="@+id/mask_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:gravity="center"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:background="#C0FFFFFF"
+                android:orientation="vertical"
+                android:visibility="invisible" >
+            <ProgressBar
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:indeterminate="true"
+                    android:layout_margin="16dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <Button
+            android:id="@+id/button_logging"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_logging_on" />
+</com.alps.sample.activity.base.view.LinearLayoutDetectableSoftKey>

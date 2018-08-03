@@ -1,0 +1,13 @@
+<resources>
+
+    <color name="apptheme_color_primary">#FF2196F3</color>
+    <color name="apptheme_color_primary_dark">#FF1976D2</color>
+    <color name="apptheme_color_primary_dark_translucent">#401976D2</color>
+    <color name="apptheme_color_primary_light">#FFBBDEFB</color>
+    <color name="apptheme_color_accent">#FFFFEB3B</color>
+    <color name="apptheme_color_primary_text">#FF212121</color>
+    <color name="apptheme_color_secondary_text">#FF727272</color>
+    <color name="apptheme_color_primary_text_translucent">#80212121</color>
+    <color name="apptheme_color_divider">#80B6B6B6</color>
+
+</resources>

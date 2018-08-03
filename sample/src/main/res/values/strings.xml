@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Application Name -->
+    <string name="app_name">ALPS Sensor SAMPLE</string>
+    <string name="app_title">ALPS Sensor SAMPLE</string>
+    <string name="label_version">version %s</string>
+    <!-- menu items -->
+    <string name="menu_scan">Scan</string>
+    <string name="menu_stop">Stop</string>
+    <string name="menu_clear">Clear</string>
+    <string name="menu_disconnect">disconnect</string>
+    <!-- parts label -->
+    <string name="button_select_device">SELECT DEVICE</string>
+    <string name="button_select_node">SELECT NODE</string>
+    <string name="button_read_setting">READ SETTING</string>
+    <string name="button_write_setting">WRITE SETTING</string>
+    <string name="button_sleep">SLEEP</string>
+    <string name="button_measure_on">MEASURE ON</string>
+    <string name="button_measure_off">MEASURE OFF</string>
+    <string name="button_logging_on">LOGGING ON</string>
+    <string name="button_logging_off">LOGGING OFF</string>
+    <!-- message label -->
+    <string name="msg_default_text">\n\n\n\n\n\n</string>
+    <string name="msg_unmount_storage">Not found the storage. Check your mobile.</string>
+    <string name="msg_bluetooth_useless">Sorry, it does not support Bluetooth LE. Tap to finish.</string>
+    <string name="msg_finish_ble_connection">Disconnect?</string>
+    <string name="msg_finish_app">Exit the application?</string>
+    <!-- pref key -->
+    <string name="key_pref_path">key_pref_path</string>
+    <string name="key_pref_usb_info">key_pref_usb_info</string>
+    <string name="key_pref_ble_info">key_pref_ble_info</string>
+    <string name="setting_item_header_measuring_intervals">Measuring Intervals</string>
+    <string name="setting_item_hint_interval_on_mode_slow">1?65535</string>
+    <string name="setting_item_header_sampling_sensors">Sampling Sensors</string>
+    <string name="sampling_type_magnetic">Magnetic</string>
+    <string name="sampling_type_acceleration">Acceleration</string>
+    <string name="sampling_type_pressure">Pressure</string>
+    <string name="sampling_type_humidity">Humidity</string>
+    <string name="sampling_type_temperature">Temperature</string>
+    <string name="sampling_type_uv">UV-A</string>
+    <string name="sampling_type_ambient_light">Ambient Light</string>
+    <string name="text_node_select">Selected Node :</string>
+    <string name="setting_item_hint_interval_on_mode_fast">10?999</string>
+    <string name="no_device_name">No-Name</string>
+    <string name="connect_to_following_devices">Connect to following devices:</string>
+    <string name="dialog_button_cancel">Cancel</string>
+    <string name="dialog_button_ok">OK</string>
+    <string name="dialog_sleep_explain">The sensor module becomes the sleep state corresponding to the chosen mode.\n\n* After the execution, this module disconnects the link.
+    </string>
+    <string name="awake_mode_timer">Timer Sleep</string>
+    <string name="awake_mode_accel">Accel Wake</string>
+    <string name="setting_item_header_interval_sleep_on_timer_sleep">Timer Sleep Interval [min]</string>
+    <string name="button_sync_timestamp">SYNC TIMESTAMP</string>
+    <string name="setting_item_header_measuring_mode">Measuring Mode</string>
+    <string name="measuring_mode_slow">Slow Mode</string>
+    <string name="measuring_mode_fast">Fast Mode</string>
+    <string name="measuring_mode_hybrid">Hybrid Mode</string>
+    <string name="measuring_mode_force">Force Mode</string>
+    <string name="measuring_interval_on_mode_slow">Slow Mode [sec]</string>
+    <string name="measuring_interval_on_mode_fast">Fast Mode [msec]</string>
+
+    <string name="unknown_battery_value">\????</string>
+    <string name="button_measure_force">FORCE SAMPLING</string>
+
+</resources>
