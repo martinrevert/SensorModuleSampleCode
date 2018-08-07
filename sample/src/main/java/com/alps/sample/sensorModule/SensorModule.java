@@ -571,11 +571,21 @@ public class SensorModule {
                         try {
                             message.addProperty("deviceId", "1122334455668899");
                             message.addProperty("deviceName", "ALPS");
-                            //En devices ficticios no es necesario enviar protocolo
-                            //message.addProperty("protocol", "zigbee");
+                            //En devices ficticios no es necesario enviar protocolo pero si se crea uno podría ser Bluetooth
+                            //message.addProperty("protocol", "bluetooth");
                             message.addProperty("AccX", latestData.accX);
                             message.addProperty("AccY" , latestData.accY);
                             message.addProperty("AccZ", latestData.accZ);
+                            message.addProperty("MagX" , latestData.magX);
+                            message.addProperty("MagY", latestData.magY);
+                            message.addProperty("MagZ", latestData.magZ);
+                            message.addProperty("Battery", latestData.batteryVoltage);
+                            message.addProperty("AmbientLight", latestData.ambientLight);
+                            message.addProperty("temperature", latestData.temperature);
+                            message.addProperty("humidity" , latestData.humidity);
+                            message.addProperty("pressure", latestData.pressure);
+                            message.addProperty("UV", latestData.uv);
+
                         } catch (JsonIOException e) {
                             e.printStackTrace();
                         }
