@@ -18,7 +18,7 @@ android {
     defaultConfig {
         applicationId "com.alps.sample"
         minSdkVersion 18
-        targetSdkVersion 27
+        targetSdkVersion 22
         versionCode 18
         versionName "1.2"
     }
