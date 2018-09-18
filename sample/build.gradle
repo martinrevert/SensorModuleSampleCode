@@ -3,7 +3,7 @@ buildscript {
         google()
         jcenter()
     }
-  }
+}
 apply plugin: 'com.android.application'
 
 repositories {
@@ -17,8 +17,8 @@ android {
 
     defaultConfig {
         applicationId "com.alps.sample"
-        minSdkVersion 18
-        targetSdkVersion 22
+        minSdkVersion 23
+        targetSdkVersion 23
         versionCode 18
         versionName "1.2"
     }
@@ -34,10 +34,19 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'pub.devrel:easypermissions:1.2.0'
-    implementation project (':nodejsmanager')
+    implementation project(':nodejsmanager')
     implementation('io.socket:socket.io-client:0.8.3') {
         // excluding org.json which is provided by Android
         exclude group: 'org.json', module: 'json'
     }
     implementation 'com.google.code.gson:gson:2.8.5'
+
+    // Room components
+    implementation "android.arch.persistence.room:runtime:$rootProject.roomVersion"
+    annotationProcessor "android.arch.persistence.room:compiler:$rootProject.roomVersion"
+    androidTestImplementation "android.arch.persistence.room:testing:$rootProject.roomVersion"
+
+    // Lifecycle components
+    implementation "android.arch.lifecycle:extensions:$rootProject.archLifecycleVersion"
+    annotationProcessor "android.arch.lifecycle:compiler:$rootProject.archLifecycleVersion"
 }

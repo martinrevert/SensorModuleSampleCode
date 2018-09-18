@@ -43,7 +43,7 @@
     <string name="text_node_select">Selected Node :</string>
     <string name="setting_item_hint_interval_on_mode_fast">10?999</string>
     <string name="no_device_name">No-Name</string>
-    <string name="connect_to_following_devices">Connect to following devices:</string>
+    <string name="connect_to_following_devices">Connecting the following devices to Visual IoT:</string>
     <string name="dialog_button_cancel">Cancel</string>
     <string name="dialog_button_ok">OK</string>
     <string name="dialog_sleep_explain">The sensor module becomes the sleep state corresponding to the chosen mode.\n\n* After the execution, this module disconnects the link.

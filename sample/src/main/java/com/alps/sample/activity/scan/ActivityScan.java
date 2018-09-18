@@ -17,10 +17,14 @@ import android.util.SparseBooleanArray;
 import android.view.*;
 import android.view.View.OnClickListener;
 import android.widget.*;
+
 import com.alps.sample.R;
 import com.alps.sample.activity.base.usingBluetooth.ActivityUsingBluetooth;
 import com.alps.sample.activity.connection.ActivitySensorCommunication;
+import com.alps.sample.database.DatabaseHelper;
+import com.alps.sample.database.DatabaseHelper_Impl;
 import com.alps.sample.log.Logg;
+import com.alps.sample.model.Device;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -31,7 +35,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 
 /**
  * [JP] 周囲にある{@link BLEDevice}をスキャンし、リストに表示します。
- *
+ * <p>
  * ユーザによって接続操作が行われた場合、
  * 選択された{@code BLEDevice}が持つ{@code BluetoothDevice}オブジェクトを収集し、
  * これを{@link ActivitySensorCommunication}に渡します。
@@ -39,13 +43,13 @@ import pub.devrel.easypermissions.EasyPermissions;
  * @see ActivityUsingBluetooth
  */
 @SuppressLint("NewApi")
-public class ActivityScan extends ActivityUsingBluetooth implements EasyPermissions.PermissionCallbacks{
+public class ActivityScan extends ActivityUsingBluetooth implements EasyPermissions.PermissionCallbacks {
     //
     // ---------------------------------------------------
     //     SCANNING-FILTER
     // ---------------------------------------------------
     //
-    // Scanning results are filtered by device name as below:
+    // Scanning results are filtered by Device name as below:
     //
     // code:
     //     if (BLE_DEVICE_FILTERING_ENABLE) {
@@ -56,7 +60,7 @@ public class ActivityScan extends ActivityUsingBluetooth implements EasyPermissi
     //
     // So, If you don't need this scan-filter, please modify it as you like.
     //
-    public static final boolean BLE_DEVICE_FILTERING_ENABLE = false;
+    public static final boolean BLE_DEVICE_FILTERING_ENABLE = true;
     public static final String BLE_DEVICE_NAME_FILTERING_REGULAR_EXPRESSION = "^SNM.*";
     //
     // ---------------------------------------------------
@@ -73,11 +77,14 @@ public class ActivityScan extends ActivityUsingBluetooth implements EasyPermissi
 
     private static final int FINE_LOCATION_PERM = 124;
 
+    private DatabaseHelper db;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        db = DatabaseHelper.getDatabase(this);
 
         // set the view
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
@@ -94,8 +101,8 @@ public class ActivityScan extends ActivityUsingBluetooth implements EasyPermissi
         String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION};
         if (EasyPermissions.hasPermissions(this, perms)) {
             //I have permission, do the thing
-        }else {
-            EasyPermissions.requestPermissions(this, "FINE LOCATION IS MANDATORY", FINE_LOCATION_PERM, Manifest.permission.ACCESS_FINE_LOCATION);
+        } else {
+            EasyPermissions.requestPermissions(this, "FINE LOCATION IS MANDATORY TO SCAN BLE DEVICES", FINE_LOCATION_PERM, Manifest.permission.ACCESS_FINE_LOCATION);
         }
 
 
@@ -107,7 +114,7 @@ public class ActivityScan extends ActivityUsingBluetooth implements EasyPermissi
                 List<Parcelable> parcelableList = new ArrayList<Parcelable>();
 
                 SparseBooleanArray array = listFoundBLEDevices.getCheckedItemPositions();
-                for (int i=0; i< foundBLEDevices.size(); i++) {
+                for (int i = 0; i < foundBLEDevices.size(); i++) {
                     boolean checked = array.get(i);
                     if (checked) {
                         BLEDevice bleDevice = adapterFoundBLEDevices.getItem(i);
@@ -122,8 +129,7 @@ public class ActivityScan extends ActivityUsingBluetooth implements EasyPermissi
                 if ((0 < size) && (size <= 4)) {
                     toggleScanning(false);
                     connectToTarget(parcelableList);
-                }
-                else {
+                } else {
                     Toast.makeText(ActivityScan.this, "Please select the sensor modules less than 4.", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -133,33 +139,45 @@ public class ActivityScan extends ActivityUsingBluetooth implements EasyPermissi
     private void connectToTarget(List<Parcelable> parcelableList) {
         int size = parcelableList.size();
         if (size > 0) {
-            final Parcelable parcelables [] = new Parcelable[parcelableList.size()];
+            final Parcelable parcelables[] = new Parcelable[parcelableList.size()];
             parcelableList.toArray(parcelables);
+
 
             String body = getString(R.string.connect_to_following_devices);
 
             for (Parcelable parcelable : parcelables) {
                 BluetoothDevice bluetoothDevice = (BluetoothDevice) parcelable;
                 Logg.d(TAG, "putExtra : %s", bluetoothDevice);
-                body += String.format("\n%s (%s)", (bluetoothDevice.getName()==null)?getString(R.string.no_device_name):bluetoothDevice.getName(), bluetoothDevice.getAddress());
+                body += String.format("\n%s (%s)", (bluetoothDevice.getName() == null) ? getString(R.string.no_device_name) : bluetoothDevice.getName(), bluetoothDevice.getAddress());
+
+                //Todo guardar en DB aqui cada vez que itera por ALPS BLE a conectar
+                final Device bleDev = new Device(bluetoothDevice.getAddress());
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        // inserta mac adrres en local db
+                        db.DeviceDAO().insert(bleDev);
+                    }
+                }).start();
             }
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(body);
-            builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
+      //      AlertDialog.Builder builder = new AlertDialog.Builder(this);
+      //      builder.setMessage(body);
+      //      builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+      //          @Override
+      //          public void onClick(DialogInterface dialog, int which) {
                     adapterFoundBLEDevices.clear();
 
                     Intent intent = new Intent(getApplicationContext(), ActivitySensorCommunication.class);
                     intent.putExtra(ActivitySensorCommunication.EXTRAS_DEVICES, parcelables);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
-                }
-            });
-            builder.setNegativeButton(R.string.dialog_button_cancel, null);
-            builder.setCancelable(false);
-            builder.show();
+      //          }
+      //      });
+      //      builder.setNegativeButton(R.string.dialog_button_cancel, null);
+      //      builder.setCancelable(false);
+      //      builder.show();
         }
     }
 

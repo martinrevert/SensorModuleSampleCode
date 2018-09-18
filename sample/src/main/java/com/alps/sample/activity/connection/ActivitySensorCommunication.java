@@ -970,6 +970,7 @@ public class ActivitySensorCommunication extends ActivityUsingBluetooth implemen
     @Override
     public void onReadDataBLESensor(JsonObject message) {
         Log.v(TAG, "message" + message);
+
         socketManager.getSocket().emit("webee-hub-logger", message);
     }
 

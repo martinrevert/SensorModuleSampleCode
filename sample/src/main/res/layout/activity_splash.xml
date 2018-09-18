@@ -20,7 +20,7 @@
         android:contentDescription=""
         android:padding="32dp"
         android:scaleType="fitCenter"
-        android:src="@drawable/splash" />
+        android:src="@drawable/logowebeeio" />
 
     <TextView
         android:id="@+id/textAppInfoVersion"

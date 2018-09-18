@@ -187,6 +187,12 @@ public class SensorModule {
         return name;
     }
 
+    private String macAddress;
+
+    public String getMacAdress(){
+        return macAddress;
+    }
+
 
     public SensorModule(Context context, BluetoothDevice bluetoothDevice, int tag, final ISensorModule iSensorModule) {
         this.tag = tag;
@@ -194,6 +200,8 @@ public class SensorModule {
         this.context = context;
 
         name = String.format("%s (%s)", bluetoothDevice.getName(), bluetoothDevice.getAddress());
+
+        macAddress = bluetoothDevice.getAddress();
 
         Logg.d(TAG, "new SensorModule(%s)", name);
 
@@ -565,11 +573,11 @@ public class SensorModule {
                         Log.v(TAG, String.valueOf(latestData.accX));
                         Log.v(TAG, String.valueOf(latestData.accY));
                         Log.v(TAG, String.valueOf(latestData.accZ));
-
+                        Log.v("SENSOR",getMacAdress().toString());
 
                         JsonObject message = new JsonObject();
                         try {
-                            message.addProperty("deviceId", "1122334455668899");
+                            message.addProperty("deviceId", getMacAdress().toString());
                             message.addProperty("deviceName", "ALPS");
                             //En devices ficticios no es necesario enviar protocolo pero si se crea uno podría ser Bluetooth
                             //message.addProperty("protocol", "bluetooth");

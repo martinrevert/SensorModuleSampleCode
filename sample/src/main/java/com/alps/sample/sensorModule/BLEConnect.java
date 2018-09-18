@@ -594,7 +594,7 @@ public class BLEConnect {
 			}
 		}
 		catch (Exception localException) {
-			Logg.d(TAG, "An exception occured while refreshing device");
+			Logg.d(TAG, "An exception occured while refreshing Device");
 		}
 	}
 
