@@ -562,7 +562,7 @@ public class SensorModule {
                             break;
                         }
                     }
-
+                    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                     if (sensorData != null) {
                         Logg.d(TAG, "recvSensorData : %s", sensorData);
                         Log.v(TAG, "Sensor DATA PUNTO DE EXTRRACCION");
@@ -573,7 +573,7 @@ public class SensorModule {
                         Log.v(TAG, String.valueOf(latestData.accX));
                         Log.v(TAG, String.valueOf(latestData.accY));
                         Log.v(TAG, String.valueOf(latestData.accZ));
-                        Log.v("SENSOR",getMacAdress().toString());
+                        Log.v("SENSOR",getMacAdress());
 
                         JsonObject message = new JsonObject();
                         try {
@@ -601,7 +601,7 @@ public class SensorModule {
 
                         if (onReadBLESensorListener != null)
                             onReadBLESensorListener.onReadDataBLESensor(message);
-
+                        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
                         if (shouldNotify) {
                             if (iSensorModule != null) {

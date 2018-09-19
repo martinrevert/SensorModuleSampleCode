@@ -22,7 +22,6 @@ import com.alps.sample.R;
 import com.alps.sample.activity.base.usingBluetooth.ActivityUsingBluetooth;
 import com.alps.sample.activity.connection.ActivitySensorCommunication;
 import com.alps.sample.database.DatabaseHelper;
-import com.alps.sample.database.DatabaseHelper_Impl;
 import com.alps.sample.log.Logg;
 import com.alps.sample.model.Device;
 
