@@ -6,8 +6,10 @@ import android.app.AlertDialog;
 import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -15,6 +17,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.*;
+
 import com.alps.sample.R;
 import com.alps.sample.activity.base.usingBluetooth.ActivityUsingBluetooth;
 import com.alps.sample.activity.base.view.LinearLayoutDetectableSoftKey;
@@ -52,7 +55,7 @@ import static java.util.concurrent.Executors.newScheduledThreadPool;
 /**
  * [JP] 渡された{@code BluetoothDevice}オブジェクトで{@link SensorModule}オブジェクトを生成し、
  * このオブジェクトから通知される様々な受信イベントを表示します。
- *
+ * <p>
  * また、様々なボタン押下をトリガーに、センサモジュールに対してBLE通信コマンドを発行したり、
  * 受信したセンサデータのログを記録させます。
  *
@@ -93,39 +96,7 @@ public class ActivitySensorCommunication extends ActivityUsingBluetooth implemen
     private SocketManager socketManager;
     private int connectionIntents = 0;
     private ScheduledExecutorService schedulePingViot;
-
-    private Emitter.Listener onAuthenticated = new Emitter.Listener() {
-        @Override
-        public void call(Object... args) {
-            Log.d(TAG, "VIoT - onAuthenticated");
-            socketManager.getSocket().emit("lb-ping");
-            if (schedulePingViot == null) {
-                schedulePingViot = newScheduledThreadPool(5);
-            }
-            schedulePingViot.scheduleAtFixedRate(new Runnable() {
-                public void run() {
-                    try {
-                        if (socketManager.getSocket() != null
-                                && socketManager.getSocket().connected()) {
-                            socketManager.getSocket().emit("lb-ping");
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }, 0, 15, TimeUnit.SECONDS);
-        }
-    };
-
-    private Emitter.Listener onAndroidPongVIOT = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            if (socketManager.getSocket() != null) {
-                Log.d(TAG, "VIoT - pong received ...");
-            }
-        }
-    };
-
+    private  SharedPreferences preferences;
 
 
     @Override
@@ -133,6 +104,7 @@ public class ActivitySensorCommunication extends ActivityUsingBluetooth implemen
         Logg.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
 
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
         // get extra value
         int tagCount = 0;
         final Intent intent = getIntent();
@@ -170,7 +142,7 @@ public class ActivitySensorCommunication extends ActivityUsingBluetooth implemen
                     buttonLog.setVisibility(View.GONE);
                 } else {
                     wrapperTextInfoData.setVisibility(View.VISIBLE);
-                    buttonLog.setVisibility(View.VISIBLE);
+                    buttonLog.setVisibility(View.GONE);
                 }
             }
         });
@@ -412,8 +384,7 @@ public class ActivitySensorCommunication extends ActivityUsingBluetooth implemen
             if (intervalMeasuringOnModeFast <= 100) {
                 commands.add(new CtrlCmdSamplingSensors(enabledSensors));
                 commands.add(new CtrlCmdMeasuringIntervalOnModeFast(intervalMeasuringOnModeFast));
-            }
-            else {
+            } else {
                 commands.add(new CtrlCmdMeasuringIntervalOnModeFast(intervalMeasuringOnModeFast));
                 commands.add(new CtrlCmdSamplingSensors(enabledSensors));
             }
@@ -565,12 +536,10 @@ public class ActivitySensorCommunication extends ActivityUsingBluetooth implemen
                 value = Integer.parseInt(text);
                 if (value < min) {
                     value = defaultValue;
-                }
-                else if (value > max) {
+                } else if (value > max) {
                     value = defaultValue;
                 }
-            }
-            catch (NumberFormatException e) {
+            } catch (NumberFormatException e) {
                 e.printStackTrace();
             }
         }
@@ -585,8 +554,7 @@ public class ActivitySensorCommunication extends ActivityUsingBluetooth implemen
         }
         if (position < sensorModules.size()) {
             target = sensorModules.get(position);
-        }
-        else {
+        } else {
             target = null;
         }
         return target;
@@ -743,25 +711,20 @@ public class ActivitySensorCommunication extends ActivityUsingBluetooth implemen
                     if (batteryVoltage >= CtrlCmdRequestStatus.DOUBLE_BATTERY_VOLTAGE_LEVEL_5) {
                         Logg.d(TAG, "level = 5");
                         iconBattery.setImageResource(R.drawable.battery_5);
-                    }
-                    else if (batteryVoltage >= CtrlCmdRequestStatus.DOUBLE_BATTERY_VOLTAGE_LEVEL_4) {
+                    } else if (batteryVoltage >= CtrlCmdRequestStatus.DOUBLE_BATTERY_VOLTAGE_LEVEL_4) {
                         Logg.d(TAG, "level = 4");
                         iconBattery.setImageResource(R.drawable.battery_4);
-                    }
-                    else if (batteryVoltage >= CtrlCmdRequestStatus.DOUBLE_BATTERY_VOLTAGE_LEVEL_3) {
+                    } else if (batteryVoltage >= CtrlCmdRequestStatus.DOUBLE_BATTERY_VOLTAGE_LEVEL_3) {
                         Logg.d(TAG, "level = 3");
                         iconBattery.setImageResource(R.drawable.battery_3);
-                    }
-                    else if (batteryVoltage >= CtrlCmdRequestStatus.DOUBLE_BATTERY_VOLTAGE_LEVEL_2) {
+                    } else if (batteryVoltage >= CtrlCmdRequestStatus.DOUBLE_BATTERY_VOLTAGE_LEVEL_2) {
                         Logg.d(TAG, "level = 2");
                         iconBattery.setImageResource(R.drawable.battery_2);
-                    }
-                    else {
+                    } else {
                         Logg.d(TAG, "level = 1");
                         iconBattery.setImageResource(R.drawable.battery_1);
                     }
-                }
-                else {
+                } else {
                     Logg.d(TAG, "level = unknown");
                     tv.setText(getString(R.string.unknown_battery_value));
                     iconBattery.setImageResource(R.drawable.battery_unknown);
@@ -771,7 +734,7 @@ public class ActivitySensorCommunication extends ActivityUsingBluetooth implemen
     }
 
     private void updateSensorData(final SensorModule sensorModule) {
-    Logg.d(TAG, "updateSensorData");
+        Logg.d(TAG, "updateSensorData");
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -789,7 +752,7 @@ public class ActivitySensorCommunication extends ActivityUsingBluetooth implemen
         @Override
         public void onReadyCommunication(final int tag, final boolean ready) {
             SensorModule sensorModule = getCurrentSensorModule();
-            if (sensorModule == null)  {
+            if (sensorModule == null) {
                 return;
             }
 
@@ -817,8 +780,7 @@ public class ActivitySensorCommunication extends ActivityUsingBluetooth implemen
                         SensorModule sensorModuleFiredEvent = sensorModules.get(tag);
                         String text = (ready ? "READY : " : "DISCONNECTED : ") + sensorModuleFiredEvent.getName();
                         Toast.makeText(ActivitySensorCommunication.this, text, Toast.LENGTH_SHORT).show();
-                    }
-                    catch (IndexOutOfBoundsException e) {
+                    } catch (IndexOutOfBoundsException e) {
                         Logg.d(TAG, "[ERROR] tag = %d, sensorModules.size = %d", tag, sensorModules.size());
                         e.printStackTrace();
                     }
@@ -857,8 +819,7 @@ public class ActivitySensorCommunication extends ActivityUsingBluetooth implemen
                         SensorModule sensorModuleFiredEvent = sensorModules.get(tag);
                         String text = sensorModuleFiredEvent.getName() + " get a NACK!\nSome changes were rejected.";
                         Toast.makeText(ActivitySensorCommunication.this, text, Toast.LENGTH_SHORT).show();
-                    }
-                    catch (IndexOutOfBoundsException e) {
+                    } catch (IndexOutOfBoundsException e) {
                         Logg.d(TAG, "[ERROR] tag = %d, sensorModules.size = %d", tag, sensorModules.size());
                         e.printStackTrace();
                     }
@@ -876,8 +837,39 @@ public class ActivitySensorCommunication extends ActivityUsingBluetooth implemen
         }
     };
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    private Emitter.Listener onAuthenticated = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            Log.d(TAG, "VIoT - onAuthenticated");
+            socketManager.getSocket().emit("lb-ping");
+            if (schedulePingViot == null) {
+                schedulePingViot = newScheduledThreadPool(5);
+            }
+            schedulePingViot.scheduleAtFixedRate(new Runnable() {
+                public void run() {
+                    try {
+                        if (socketManager.getSocket() != null
+                                && socketManager.getSocket().connected()) {
+                            socketManager.getSocket().emit("lb-ping");
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }, 0, 15, TimeUnit.SECONDS);
+        }
+    };
+
+    private Emitter.Listener onAndroidPongVIOT = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            if (socketManager.getSocket() != null) {
+                Log.d(TAG, "VIoT - pong received ...");
+            }
+        }
+    };
 
     private void connectSocketViot() {
         if (connectionIntents > 3) {
@@ -911,11 +903,15 @@ public class ActivitySensorCommunication extends ActivityUsingBluetooth implemen
         });
     }
 
-    static JSONObject getCredentials() {
+    JSONObject getCredentials() {
         try {
-            String secondPart = "/api/connections/generateToken?api_key=%s&api_secret=%s";
-            String[] APIs = new String[]{Constants.API_KEY, Constants.API_SECRET};
-            String generateTokenApi = Constants.VIOT_BASE_URL + secondPart;
+
+            String API_KEY = preferences.getString("API_KEY", null);
+            String API_SECRET = preferences.getString("API_SECRET", null);
+
+            String path = "/api/connections/generateToken?api_key=%s&api_secret=%s";
+            String[] APIs = new String[]{API_KEY, API_SECRET};
+            String generateTokenApi = Constants.VIOT_BASE_URL + path;
             URL url = new URL(String.format(generateTokenApi, APIs[0],
                     APIs[1]));
             HttpURLConnection connection =
@@ -966,14 +962,11 @@ public class ActivitySensorCommunication extends ActivityUsingBluetooth implemen
     }
 
 
-
     @Override
     public void onReadDataBLESensor(JsonObject message) {
         Log.v(TAG, "message" + message);
-
         socketManager.getSocket().emit("webee-hub-logger", message);
     }
 
-
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7
 }

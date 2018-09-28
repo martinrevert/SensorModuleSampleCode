@@ -27,40 +27,49 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:layout_marginLeft="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginRight="16dp"
         android:gravity="center_vertical"
-        android:orientation="horizontal" >
+        android:orientation="horizontal"
+        android:visibility="visible">
+
         <Spinner
-                android:id="@+id/spinner_device"
-                android:spinnerMode="dropdown"
-                android:dropDownWidth="wrap_content"
-                android:paddingTop="4dp"
-                android:paddingBottom="4dp"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"/>
+            android:id="@+id/spinner_device"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:dropDownWidth="wrap_content"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:spinnerMode="dropdown"
+            android:visibility="visible" />
+
         <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/icon_status_battery"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_margin="2dp" />
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
-            <ImageView
-                    android:id="@+id/icon_status_battery"
-                    android:layout_margin="2dp"
-                    android:layout_width="36dp" android:layout_height="36dp"/>
-            <LinearLayout
-                    android:gravity="center"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                android:gravity="center"
+                android:orientation="horizontal">
+
                 <TextView
-                        android:id="@+id/battery_value"
-                        style="@style/BatteryValueText"
-                        android:text="@string/unknown_battery_value"/>
+                    android:id="@+id/battery_value"
+                    style="@style/BatteryValueText"
+                    android:text="@string/unknown_battery_value" />
+
                 <TextView
-                        style="@style/BatteryValueText"
-                        android:text="[V]"/>
+                    style="@style/BatteryValueText"
+                    android:text="[V]" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
@@ -92,174 +101,227 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="vertical" >
+
                     <Button
-                            android:id="@+id/button_setting_read"
-                            style="?android:attr/buttonStyleSmall"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/button_read_setting" />
+                        android:id="@+id/button_setting_read"
+                        style="?android:attr/buttonStyleSmall"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/button_read_setting"
+                        android:visibility="gone" />
+
                     <Button
-                            android:id="@+id/button_setting_write"
-                            style="?android:attr/buttonStyleSmall"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/button_write_setting" />
+                        android:id="@+id/button_setting_write"
+                        style="?android:attr/buttonStyleSmall"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/button_write_setting"
+                        android:visibility="visible" />
+
                     <Button
-                            android:id="@+id/button_sync_timestamp"
-                            style="?android:attr/buttonStyleSmall"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/button_sync_timestamp" />
+                        android:id="@+id/button_sync_timestamp"
+                        style="?android:attr/buttonStyleSmall"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/button_sync_timestamp"
+                        android:visibility="gone" />
+
                     <Button
-                            android:id="@+id/button_sleep"
-                            style="?android:attr/buttonStyleSmall"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/button_sleep" />
+                        android:id="@+id/button_sleep"
+                        style="?android:attr/buttonStyleSmall"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/button_sleep"
+                        android:visibility="gone" />
+
                     <Button
-                            android:id="@+id/button_measure"
-                            style="?android:attr/buttonStyleSmall"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/button_measure_on" />
+                        android:id="@+id/button_measure"
+                        style="?android:attr/buttonStyleSmall"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/button_measure_on"
+                        android:visibility="visible" />
                 </LinearLayout>
 
                 <ScrollView
                     android:id="@+id/text_info_setting"
                     android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="match_parent"
+                    android:layout_height="331dp"
                     android:layout_margin="2dp"
-                    android:fadeScrollbars="false"
+                    android:layout_weight="1"
                     android:background="@android:color/white"
+                    android:fadeScrollbars="false"
                     android:padding="4dp"
-                    android:textAppearance="?android:attr/textAppearanceMedium">
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:visibility="visible">
 
                     <LinearLayout
-                            android:orientation="vertical"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
 
                         <TextView
-                                android:text="@string/setting_item_header_measuring_mode"
-                                style="@style/SettingItemHeader"/>
-                        <LinearLayout
-                                android:orientation="vertical"
-                                style="@style/SettingItemContentsTable"
-                                android:layout_width="match_parent" android:layout_height="wrap_content">
-                            <Spinner
-                                    android:id="@+id/setting_item_edit_measuring_mode"
-                                    android:layout_marginBottom="8dp"
-                                    android:gravity="center"
-                                    android:spinnerMode="dropdown"
-                                    android:dropDownWidth="match_parent"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"/>
-                        </LinearLayout>
+                            style="@style/SettingItemHeader"
+                            android:text="@string/setting_item_header_measuring_mode" />
 
-                        <TextView
-                                android:text="@string/setting_item_header_measuring_intervals"
-                                style="@style/SettingItemHeader"/>
                         <LinearLayout
-                                android:orientation="vertical"
-                                style="@style/SettingItemContentsTable"
-                                android:layout_width="match_parent" android:layout_height="wrap_content">
-                            <TextView
-                                    android:text="@string/measuring_interval_on_mode_slow"
-                                    android:textColor="@color/apptheme_color_secondary_text"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"/>
-                            <EditText
-                                    android:id="@+id/setting_item_edit_interval_on_mode_slow"
-                                    android:layout_marginBottom="8dp"
-                                    android:gravity="center"
-                                    android:inputType="number"
-                                    android:hint="@string/setting_item_hint_interval_on_mode_slow"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"/>
-                            <TextView
-                                    android:text="@string/measuring_interval_on_mode_fast"
-                                    android:textColor="@color/apptheme_color_secondary_text"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"/>
-                            <EditText
-                                    android:id="@+id/setting_item_edit_interval_on_mode_fast"
-                                    android:layout_marginBottom="8dp"
-                                    android:gravity="center"
-                                    android:inputType="number"
-                                    android:hint="@string/setting_item_hint_interval_on_mode_fast"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"/>
-                        </LinearLayout>
-
-                        <TextView
-                                android:text="@string/setting_item_header_sampling_sensors"
-                                style="@style/SettingItemHeader"/>
-                        <LinearLayout
-                            android:orientation="vertical"
                             style="@style/SettingItemContentsTable"
-                            android:layout_width="match_parent" android:layout_height="wrap_content">
-                            <TextView
-                                    android:text="@string/sampling_type_magnetic"
-                                    android:textColor="@color/apptheme_color_secondary_text"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"/>
-                            <Switch style="@style/SettingItemSwitchPortrait" android:id="@+id/setting_item_switch_magnetic"/>
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <Spinner
+                                android:id="@+id/setting_item_edit_measuring_mode"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp"
+                                android:dropDownWidth="match_parent"
+                                android:gravity="center"
+                                android:spinnerMode="dropdown" />
+                        </LinearLayout>
+
+                        <TextView
+                            style="@style/SettingItemHeader"
+                            android:text="@string/setting_item_header_measuring_intervals" />
+
+                        <LinearLayout
+                            style="@style/SettingItemContentsTable"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
 
                             <TextView
-                                    android:text="@string/sampling_type_acceleration"
-                                    android:textColor="@color/apptheme_color_secondary_text"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"/>
-                            <Switch style="@style/SettingItemSwitchPortrait" android:id="@+id/setting_item_switch_acceleration"/>
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/measuring_interval_on_mode_slow"
+                                android:textColor="@color/apptheme_color_secondary_text" />
+
+                            <EditText
+                                android:id="@+id/setting_item_edit_interval_on_mode_slow"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp"
+                                android:gravity="center"
+                                android:hint="@string/setting_item_hint_interval_on_mode_slow"
+                                android:inputType="number" />
+
                             <TextView
-                                    android:text="@string/sampling_type_uv"
-                                    android:textColor="@color/apptheme_color_secondary_text"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"/>
-                            <Switch style="@style/SettingItemSwitchPortrait" android:id="@+id/setting_item_switch_uv"/>
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/measuring_interval_on_mode_fast"
+                                android:textColor="@color/apptheme_color_secondary_text" />
+
+                            <EditText
+                                android:id="@+id/setting_item_edit_interval_on_mode_fast"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp"
+                                android:gravity="center"
+                                android:hint="@string/setting_item_hint_interval_on_mode_fast"
+                                android:inputType="number" />
+                        </LinearLayout>
+
+                        <TextView
+                            style="@style/SettingItemHeader"
+                            android:text="@string/setting_item_header_sampling_sensors" />
+
+                        <LinearLayout
+                            style="@style/SettingItemContentsTable"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone">
+
                             <TextView
-                                    android:text="@string/sampling_type_ambient_light"
-                                    android:textColor="@color/apptheme_color_secondary_text"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"/>
-                            <Switch style="@style/SettingItemSwitchPortrait" android:id="@+id/setting_item_switch_ambient_light"/>
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/sampling_type_magnetic"
+                                android:textColor="@color/apptheme_color_secondary_text" />
+
+                            <Switch
+                                android:id="@+id/setting_item_switch_magnetic"
+                                style="@style/SettingItemSwitchPortrait" />
+
                             <TextView
-                                    android:text="@string/sampling_type_humidity"
-                                    android:textColor="@color/apptheme_color_secondary_text"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"/>
-                            <Switch style="@style/SettingItemSwitchPortrait" android:id="@+id/setting_item_switch_humidity"/>
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/sampling_type_acceleration"
+                                android:textColor="@color/apptheme_color_secondary_text" />
+
+                            <Switch
+                                android:id="@+id/setting_item_switch_acceleration"
+                                style="@style/SettingItemSwitchPortrait" />
+
                             <TextView
-                                    android:text="@string/sampling_type_temperature"
-                                    android:textColor="@color/apptheme_color_secondary_text"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"/>
-                            <Switch style="@style/SettingItemSwitchPortrait" android:id="@+id/setting_item_switch_temperature"/>
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/sampling_type_uv"
+                                android:textColor="@color/apptheme_color_secondary_text" />
+
+                            <Switch
+                                android:id="@+id/setting_item_switch_uv"
+                                style="@style/SettingItemSwitchPortrait" />
+
                             <TextView
-                                    android:text="@string/sampling_type_pressure"
-                                    android:textColor="@color/apptheme_color_secondary_text"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"/>
-                            <Switch style="@style/SettingItemSwitchPortrait" android:id="@+id/setting_item_switch_pressure"/>
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/sampling_type_ambient_light"
+                                android:textColor="@color/apptheme_color_secondary_text" />
+
+                            <Switch
+                                android:id="@+id/setting_item_switch_ambient_light"
+                                style="@style/SettingItemSwitchPortrait" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/sampling_type_humidity"
+                                android:textColor="@color/apptheme_color_secondary_text" />
+
+                            <Switch
+                                android:id="@+id/setting_item_switch_humidity"
+                                style="@style/SettingItemSwitchPortrait" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/sampling_type_temperature"
+                                android:textColor="@color/apptheme_color_secondary_text" />
+
+                            <Switch
+                                android:id="@+id/setting_item_switch_temperature"
+                                style="@style/SettingItemSwitchPortrait" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/sampling_type_pressure"
+                                android:textColor="@color/apptheme_color_secondary_text" />
+
+                            <Switch
+                                android:id="@+id/setting_item_switch_pressure"
+                                style="@style/SettingItemSwitchPortrait" />
                         </LinearLayout>
 
 
                         <TextView
-                                android:text="@string/setting_item_header_interval_sleep_on_timer_sleep"
-                                style="@style/SettingItemHeader"/>
+                            style="@style/SettingItemHeader"
+                            android:text="@string/setting_item_header_interval_sleep_on_timer_sleep" />
+
                         <LinearLayout
-                                android:orientation="vertical"
-                                style="@style/SettingItemContentsTable"
-                                android:layout_width="match_parent" android:layout_height="wrap_content">
+                            style="@style/SettingItemContentsTable"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
                             <EditText
-                                    style="@style/SettingItemRowItem"
-                                    android:id="@+id/setting_item_sleep_interval_on_timer_mode"
-                                    android:gravity="center"
-                                    android:inputType="number"
-                                    android:hint="@string/setting_item_hint_interval_on_mode_slow"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"/>
+                                android:id="@+id/setting_item_sleep_interval_on_timer_mode"
+                                style="@style/SettingItemRowItem"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:hint="@string/setting_item_hint_interval_on_mode_slow"
+                                android:inputType="number" />
                         </LinearLayout>
 
                     </LinearLayout>
@@ -285,31 +347,34 @@
         </LinearLayout>
 
         <LinearLayout
-                android:id="@+id/mask_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:gravity="center"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:background="#C0FFFFFF"
-                android:orientation="vertical"
-                android:visibility="invisible" >
+            android:id="@+id/mask_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="0dp"
+            android:background="#C0FFFFFF"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="invisible">
+
             <ProgressBar
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:indeterminate="true"
-                    android:layout_margin="16dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:indeterminate="true" />
         </LinearLayout>
     </RelativeLayout>
 
     <Button
-            android:id="@+id/button_logging"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/button_logging_on" />
+        android:id="@+id/button_logging"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/button_logging_on"
+        android:visibility="gone" />
 </com.alps.sample.activity.base.view.LinearLayoutDetectableSoftKey>

@@ -19,11 +19,12 @@ import com.alps.sample.sensorModule.enums.Sensor;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-
 
 
 /**
@@ -189,7 +190,7 @@ public class SensorModule {
 
     private String macAddress;
 
-    public String getMacAdress(){
+    public String getMacAdress() {
         return macAddress;
     }
 
@@ -538,12 +539,63 @@ public class SensorModule {
                             latestData.month = temp.getMonth();
                             latestData.year = temp.getYear();
                             sensorData = temp;
+
+
+                            ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                            if (sensorData != null) {
+                                Logg.d(TAG, "recvSensorData : %s", sensorData);
+                                Log.v(TAG, "Sensor POINT OF EXTRACTION");
+
+                                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                                Date date = new Date();
+
+                                latestData.index = sensorData.getIndex();
+                                logger.writeSensorData(SensorModule.this);
+
+                                JsonObject message = new JsonObject();
+                                try {
+                                    message.addProperty("deviceId", getMacAdress());
+                                    message.addProperty("deviceName", "ALPS");
+                                    message.addProperty("AccX", latestData.accX);
+                                    message.addProperty("AccY", latestData.accY);
+                                    message.addProperty("AccZ", latestData.accZ);
+                                    message.addProperty("MagX", latestData.magX);
+                                    message.addProperty("MagY", latestData.magY);
+                                    message.addProperty("MagZ", latestData.magZ);
+                                    message.addProperty("Battery", latestData.batteryVoltage);
+                                    message.addProperty("AmbientLight", latestData.ambientLight);
+                                    message.addProperty("temperature", latestData.temperature);
+                                    message.addProperty("humidity", latestData.humidity);
+                                    message.addProperty("pressure", latestData.pressure);
+                                    message.addProperty("UV", latestData.uv);
+                                    message.addProperty("Date", date.toString());
+
+
+                                } catch (JsonIOException e) {
+                                    e.printStackTrace();
+                                }
+
+
+                                if (onReadBLESensorListener != null)
+                                    onReadBLESensorListener.onReadDataBLESensor(message);
+
+                                if (shouldNotify) {
+                                    if (iSensorModule != null) {
+                                        iSensorModule.onReceiveNotificationSensorData(tag);
+                                    }
+                                }
+                            }
+                            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
                             break;
                         }
                         case CtrlCmdRequestStatus.EVENT_CODE_RESULT: {
                             CtrlCmdRequestStatus status = new CtrlCmdRequestStatus(bytes);
                             Logg.d(TAG, "recvStatus : %s", status);
                             latestData.batteryVoltage = status.batteryVoltage;
+
 
                             if (!status.autoNotify) {
                                 bleConnect.cancelTimer();
@@ -554,6 +606,11 @@ public class SensorModule {
                             if ((innerSequence == InnerSequence.ActivatedReady) && (shouldNotify) && (iSensorModule != null)) {
                                 iSensorModule.onReceiveNotificationStatus(tag);
                             }
+
+
+
+
+
                             break;
                         }
                         default: {
@@ -562,53 +619,8 @@ public class SensorModule {
                             break;
                         }
                     }
-                    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                    if (sensorData != null) {
-                        Logg.d(TAG, "recvSensorData : %s", sensorData);
-                        Log.v(TAG, "Sensor DATA PUNTO DE EXTRRACCION");
-
-                        latestData.index = sensorData.getIndex();
-                        logger.writeSensorData(SensorModule.this);
-
-                        Log.v(TAG, String.valueOf(latestData.accX));
-                        Log.v(TAG, String.valueOf(latestData.accY));
-                        Log.v(TAG, String.valueOf(latestData.accZ));
-                        Log.v("SENSOR",getMacAdress());
-
-                        JsonObject message = new JsonObject();
-                        try {
-                            message.addProperty("deviceId", getMacAdress().toString());
-                            message.addProperty("deviceName", "ALPS");
-                            //En devices ficticios no es necesario enviar protocolo pero si se crea uno podría ser Bluetooth
-                            //message.addProperty("protocol", "bluetooth");
-                            message.addProperty("AccX", latestData.accX);
-                            message.addProperty("AccY" , latestData.accY);
-                            message.addProperty("AccZ", latestData.accZ);
-                            message.addProperty("MagX" , latestData.magX);
-                            message.addProperty("MagY", latestData.magY);
-                            message.addProperty("MagZ", latestData.magZ);
-                            message.addProperty("Battery", latestData.batteryVoltage);
-                            message.addProperty("AmbientLight", latestData.ambientLight);
-                            message.addProperty("temperature", latestData.temperature);
-                            message.addProperty("humidity" , latestData.humidity);
-                            message.addProperty("pressure", latestData.pressure);
-                            message.addProperty("UV", latestData.uv);
-
-                        } catch (JsonIOException e) {
-                            e.printStackTrace();
-                        }
 
 
-                        if (onReadBLESensorListener != null)
-                            onReadBLESensorListener.onReadDataBLESensor(message);
-                        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-                        if (shouldNotify) {
-                            if (iSensorModule != null) {
-                                iSensorModule.onReceiveNotificationSensorData(tag);
-                            }
-                        }
-                    }
                     break;
                 }
                 case GettingResults: {
@@ -772,8 +784,6 @@ public class SensorModule {
             Logg.d(TAG, "[ERROR] command is not valid!");
         }
     }
-
-
 
 
 }
