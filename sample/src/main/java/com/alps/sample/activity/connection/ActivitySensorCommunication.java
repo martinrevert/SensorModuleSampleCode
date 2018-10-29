@@ -260,6 +260,9 @@ public class ActivitySensorCommunication extends ActivityUsingBluetooth implemen
             }
             sensorModules.clear();
             sensorModules = null;
+            //////////////VOLT////////////////////////////
+            socketManager.getSocket().emit("webee.stream.unsubscribe", "123456:5a04bf41c7b10421cc09e53e:5a04c07ec7b10421cc09e543");
+            //////////////////////////////////////////////
         }
     }
 
@@ -870,7 +873,16 @@ public class ActivitySensorCommunication extends ActivityUsingBluetooth implemen
             }
         }
     };
-
+//////////////////////////VOLT//////////////////////////////////////////
+    private Emitter.Listener onStartCar = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            if (socketManager.getSocket() != null) {
+                Log.d(TAG, "VIoT - message received ...");
+            }
+        }
+    };
+///////////////////////////////////////////////////////////////////////////
     private void connectSocketViot() {
         if (connectionIntents > 3) {
             showErrorMessage();
@@ -886,7 +898,9 @@ public class ActivitySensorCommunication extends ActivityUsingBluetooth implemen
 
         socketManager.getSocket().on("authenticated", onAuthenticated);
         socketManager.getSocket().on("lb-pong", onAndroidPongVIOT);
-
+        /////////////////VOLT////////////////////////////////////////////////
+        socketManager.getSocket().on("startEngine", onStartCar);
+        ///////////////////////////////////////////////////////////////////////
 
         if (socketManager.getSocket().connected()) {
             socketManager.getSocket().disconnect();
@@ -906,11 +920,11 @@ public class ActivitySensorCommunication extends ActivityUsingBluetooth implemen
     JSONObject getCredentials() {
         try {
 
-            String API_KEY = preferences.getString("API_KEY", null);
-            String API_SECRET = preferences.getString("API_SECRET", null);
+            //String API_KEY = preferences.getString("API_KEY", null);
+            //String API_SECRET = preferences.getString("API_SECRET", null);
 
             String path = "/api/connections/generateToken?api_key=%s&api_secret=%s";
-            String[] APIs = new String[]{API_KEY, API_SECRET};
+            String[] APIs = new String[]{Constants.API_KEY, Constants.API_SECRET};
             String generateTokenApi = Constants.VIOT_BASE_URL + path;
             URL url = new URL(String.format(generateTokenApi, APIs[0],
                     APIs[1]));
@@ -945,6 +959,10 @@ public class ActivitySensorCommunication extends ActivityUsingBluetooth implemen
                             requestJSONObject.put("agent", "hub");
                             requestJSONObject.put("uuid", "AndroidALPSSensorPOC");
                             socketManager.getSocket().emit("webee-auth-strategy", requestJSONObject);
+
+                            /////////VOLT//////////////
+                            socketManager.getSocket().emit("webee.stream.subscribe", "123456:5a04bf41c7b10421cc09e53e:5a04c07ec7b10421cc09e543");
+                            //////////////////////////
                             Log.i(TAG, "json: " + requestJSONObject);
                         }
                     } catch (JSONException e) {

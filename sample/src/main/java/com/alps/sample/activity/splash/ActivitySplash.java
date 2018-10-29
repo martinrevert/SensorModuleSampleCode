@@ -45,7 +45,7 @@ public class ActivitySplash extends AppCompatActivity {
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
         setContentView(R.layout.activity_splash);
 
-        LocalCredentials();
+      //  LocalCredentials();
 
         CheckBluetooth();
 
@@ -74,10 +74,10 @@ public class ActivitySplash extends AppCompatActivity {
             if (adapter.isEnabled()) {
                 // show splash
                 // start activity
-               // Intent intent = new Intent(getApplicationContext(), ActivityScan.class);
-               // intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-               // startActivity(intent);
-               // finish();
+                Intent intent = new Intent(getApplicationContext(), ActivityScan.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                finish();
 
             } else {
                 // show dialog
@@ -125,7 +125,7 @@ public class ActivitySplash extends AppCompatActivity {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private void LocalCredentials() {
 
-        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+    /*    final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         String API_KEY = preferences.getString("API_KEY", null);
         String API_SECRET = preferences.getString("API_SECRET", null);
 
@@ -198,7 +198,7 @@ public class ActivitySplash extends AppCompatActivity {
             finish();
 
         }
-
+*/
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     }
