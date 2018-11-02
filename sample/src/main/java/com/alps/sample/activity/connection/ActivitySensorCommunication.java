@@ -97,7 +97,7 @@ public class ActivitySensorCommunication extends ActivityUsingBluetooth implemen
     private int connectionIntents = 0;
     private ScheduledExecutorService schedulePingViot;
     private  SharedPreferences preferences;
-
+    private String enterpriseId;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -873,15 +873,30 @@ public class ActivitySensorCommunication extends ActivityUsingBluetooth implemen
             }
         }
     };
-//////////////////////////VOLT//////////////////////////////////////////
+
+//////////////////////////VOLT/////////////////////////////////////////////
+
+    private Emitter.Listener onStreamReady = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            if (socketManager.getSocket() != null) {
+                Log.d(TAG, "VIoT - Stream Ready on VIoT");
+                socketManager.getSocket().on("startEngine", onStartCar);
+                socketManager.getSocket().emit("webee.stream.subscribe", "123456:" + enterpriseId + ":5a04c07ec7b10421cc09e543");
+            }
+        }
+    };
+
     private Emitter.Listener onStartCar = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
             if (socketManager.getSocket() != null) {
-                Log.d(TAG, "VIoT - message received ...");
+                Log.d(TAG, "VIoT - onStartEngine received ...");
             }
         }
     };
+
+
 ///////////////////////////////////////////////////////////////////////////
     private void connectSocketViot() {
         if (connectionIntents > 3) {
@@ -895,11 +910,11 @@ public class ActivitySensorCommunication extends ActivityUsingBluetooth implemen
         //opts.forceNew = true;
         socketManager.createSocket(Constants.VIOT_BASE_URL, opts);
 
-
         socketManager.getSocket().on("authenticated", onAuthenticated);
         socketManager.getSocket().on("lb-pong", onAndroidPongVIOT);
         /////////////////VOLT////////////////////////////////////////////////
-        socketManager.getSocket().on("startEngine", onStartCar);
+        socketManager.getSocket().on("webee.stream.ready", onStreamReady);
+
         ///////////////////////////////////////////////////////////////////////
 
         if (socketManager.getSocket().connected()) {
@@ -937,6 +952,7 @@ public class ActivitySensorCommunication extends ActivityUsingBluetooth implemen
             while ((tmp = reader.readLine()) != null)
                 json.append(tmp).append("\n");
             reader.close();
+            Log.v(TAG, json.toString());
             return new JSONObject(json.toString());
         } catch (Exception e) {
             e.printStackTrace();
@@ -952,6 +968,12 @@ public class ActivitySensorCommunication extends ActivityUsingBluetooth implemen
                 if (socketManager.getSocket() != null) {
                     JSONObject json = getCredentials();
                     try {
+                        enterpriseId = json.getString("enterpriseId");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    Log.v(TAG, enterpriseId);
+                    try {
                         if (json != null) {
                             JSONObject requestJSONObject = new JSONObject();
                             requestJSONObject.put("id", json.getString("id"));
@@ -960,9 +982,6 @@ public class ActivitySensorCommunication extends ActivityUsingBluetooth implemen
                             requestJSONObject.put("uuid", "AndroidALPSSensorPOC");
                             socketManager.getSocket().emit("webee-auth-strategy", requestJSONObject);
 
-                            /////////VOLT//////////////
-                            socketManager.getSocket().emit("webee.stream.subscribe", "123456:5a04bf41c7b10421cc09e53e:5a04c07ec7b10421cc09e543");
-                            //////////////////////////
                             Log.i(TAG, "json: " + requestJSONObject);
                         }
                     } catch (JSONException e) {
